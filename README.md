@@ -1,36 +1,60 @@
 # AI Toolkit Helper
 
-This project is an unofficial helper application designed to aid in working with [AI Toolkit](https://github.com/ostris/ai-toolkit). It's important to note that this is not an official tool associated with AI Toolkit, but rather a personal project created to streamline my workflow when using AI Toolkit. I'm sharing it in the hope that it might be useful to others working with AI Toolkit as well.
+AI Toolkit Helper is an unofficial application designed to streamline workflows when using [AI Toolkit](https://github.com/ostris/ai-toolkit). While not officially associated with AI Toolkit, this personal project aims to enhance efficiency and user experience in AI model training and management.
 
-## Disclaimer
+## Key Features
 
-This is not an official tool for AI Toolkit. It's a personal project created to enhance my workflow and is shared in case it's helpful to others. Use at your own discretion.
+### Advanced Image Processing
+- **Florence-2 Integration**: Leverage Microsoft's Florence-2 model for state-of-the-art image captioning.
+- **Automated Captioning**: Streamline the process of generating captions for your image datasets.
+- **Flexible Image Gallery**: Easily manage, view, and caption your dataset images through an intuitive interface.
 
-## Features
-- Image Captioning: Streamline the process of captioning images for AI model training.
-- Config Generation: Easily create and manage configuration files for AI Toolkit.
-- Training Management: Simplified interface for managing training processes.
-- Telegram Integration: Optional notifications via Telegram.
+### Streamlined Training Management
+- **Batch Training**: Set up and manage multiple training configurations for sequential execution.
+- **Config Generation**: User-friendly interface for creating and customizing YAML configuration files.
+- **Customizable Parameters**: Easily adjust learning rates, batch sizes, training steps, and more through the GUI.
 
-## Installation
+### User-Centric Design
+- **Intuitive GUI**: Clean and accessible interface making complex AI tasks more approachable.
+- **Cross-Platform Compatibility**: Designed to work seamlessly on both Windows and Linux systems.
+- **Telegram Integration**: Optional notifications to keep you updated on training progress and completion.
+
+## Getting Started
+
+### Installation
 ```bash
 git clone https://github.com/your-username/ai-toolkit-helper.git
 cd ai-toolkit-helper
 pip install -r requirements.txt
 ```
 
-## Usage
-Run the main application:
+### Usage
+Launch the application:
 ```bash
 python main.py
 ```
 
+## Detailed Workflow
+
+1. **Image Preparation**: Use the Image Captioning tab to load, view, and automatically caption your dataset images.
+2. **Configuration**: Utilize the Config Generator to create custom YAML files for various training scenarios.
+3. **Training**: Queue and execute batch training jobs in the Training tab.
+4. **Monitoring**: Keep track of your training progress through the application and optional Telegram notifications.
+
 ## Contributing
-While this is primarily a personal tool, suggestions and contributions are welcome. If you have ideas for improvements or bug fixes, feel free to open an issue or submit a pull request.
+
+While primarily a personal tool, contributions are welcome. For significant changes, please open an issue first to discuss what you would like to change.
 
 ## License
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Disclaimer
+
+AI Toolkit Helper is an unofficial tool created to enhance personal workflow efficiency. It is not affiliated with or endorsed by AI Toolkit. Use at your own discretion.
+
 ## Acknowledgments
-- This project is designed to work with [AI Toolkit](https://github.com/ostris/ai-toolkit) by ostris.
-- Thanks to the AI Toolkit community for inspiration and support.
+
+- Designed to complement [AI Toolkit](https://github.com/ostris/ai-toolkit) by ostris.
+- Utilizes the Florence-2 model from Microsoft for advanced image captioning.
+- Inspired by and grateful to the AI Toolkit community.
