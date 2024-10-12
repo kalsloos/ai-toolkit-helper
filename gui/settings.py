@@ -5,18 +5,68 @@ from tkinter import filedialog, messagebox, ttk
 import asyncio
 from telegram import Bot
 from telegram.error import TelegramError
+from cryptography.fernet import Fernet, InvalidToken
+import base64
 
 CONFIG_FILE = "ai_toolkit_helper_config.json"
+KEY_FILE = "encryption_key.key"
+
+def generate_key():
+    return Fernet.generate_key()
+
+def load_or_create_key():
+    if os.path.exists(KEY_FILE):
+        with open(KEY_FILE, "rb") as key_file:
+            return key_file.read()
+    else:
+        key = generate_key()
+        with open(KEY_FILE, "wb") as key_file:
+            key_file.write(key)
+        return key
+
+def is_encrypted(value):
+    try:
+        # Check if the value is a valid base64 string
+        base64.b64decode(value)
+        return True
+    except:
+        return False
+
+def encrypt_value(value, key):
+    f = Fernet(key)
+    return base64.b64encode(f.encrypt(value.encode())).decode()
+
+def decrypt_value(encrypted_value, key):
+    if not is_encrypted(encrypted_value):
+        return encrypted_value  # Return as-is if it's not encrypted
+    try:
+        f = Fernet(key)
+        return f.decrypt(base64.b64decode(encrypted_value)).decode()
+    except (InvalidToken, UnicodeDecodeError):
+        # If decryption fails, return the original value
+        return encrypted_value
 
 def load_config():
+    key = load_or_create_key()
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'r') as config_file:
-            return json.load(config_file)
+            config = json.load(config_file)
+            if 'telegram_bot_token' in config:
+                config['telegram_bot_token'] = decrypt_value(config['telegram_bot_token'], key)
+            if 'telegram_chat_id' in config:
+                config['telegram_chat_id'] = decrypt_value(config['telegram_chat_id'], key)
+            return config
     return {}
 
 def save_config(config):
+    key = load_or_create_key()
+    config_to_save = config.copy()
+    if 'telegram_bot_token' in config_to_save:
+        config_to_save['telegram_bot_token'] = encrypt_value(config_to_save['telegram_bot_token'], key)
+    if 'telegram_chat_id' in config_to_save:
+        config_to_save['telegram_chat_id'] = encrypt_value(config_to_save['telegram_chat_id'], key)
     with open(CONFIG_FILE, 'w') as config_file:
-        json.dump(config, config_file)
+        json.dump(config_to_save, config_file)
 
 class TelegramNotifier:
     def __init__(self, token, chat_id):
@@ -69,7 +119,7 @@ def create_settings_tab(settings_tab, ai_toolkit_folder):
     ttk.Checkbutton(main_frame, text="Enable Telegram Notifications", variable=telegram_enabled).grid(row=4, column=0, columnspan=3, sticky="w", padx=5, pady=5)
 
     ttk.Label(main_frame, text="Telegram Bot Token:").grid(row=5, column=0, sticky="w", padx=5, pady=5)
-    ttk.Entry(main_frame, textvariable=telegram_bot_token, width=50).grid(row=5, column=1, columnspan=2, padx=5, pady=5)
+    ttk.Entry(main_frame, textvariable=telegram_bot_token, width=50, show="*").grid(row=5, column=1, columnspan=2, padx=5, pady=5)
 
     ttk.Label(main_frame, text="Telegram Chat ID:").grid(row=6, column=0, sticky="w", padx=5, pady=5)
     ttk.Entry(main_frame, textvariable=telegram_chat_id, width=50).grid(row=6, column=1, columnspan=2, padx=5, pady=5)

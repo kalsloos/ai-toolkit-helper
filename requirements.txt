@@ -13,3 +13,4 @@ scikit-learn==1.2.2
 tqdm==4.66.5
 einops==0.7.0
 safetensors==0.4.4
+cryptography==3.4.7

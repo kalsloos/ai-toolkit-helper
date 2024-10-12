@@ -13,8 +13,8 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("AI Toolkit Helper")
-        self.geometry("900x1000")
-        self.minsize(900, 800)
+        self.geometry("1200x1000")
+        self.minsize(1200, 900)
 
         # Shared Variable: AI Toolkit Folder Path
         self.ai_toolkit_folder = tk.StringVar()
