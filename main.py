@@ -4,6 +4,7 @@ import subprocess
 import atexit
 import os
 import sys
+import threading
 from gui.captioning import create_captioning_tab
 from gui.training import create_training_tab
 from gui.config_generator import create_config_generator_tab
@@ -46,24 +47,45 @@ class App(tk.Tk):
         create_training_tab(training_tab, self.ai_toolkit_folder)
         self.telegram_enabled = create_settings_tab(settings_tab, self.ai_toolkit_folder)
 
+        # Bind the telegram_enabled variable to update_telegram_monitoring
+        self.telegram_enabled.trace_add("write", self.update_telegram_monitoring)
+
         # Start Telegram monitoring if enabled
         self.telegram_process = None
-        self.start_telegram_monitoring()
+        self.update_telegram_monitoring()
 
         # Bind the close event
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    def update_telegram_monitoring(self, *args):
+        if self.telegram_enabled.get():
+            self.start_telegram_monitoring()
+        else:
+            self.stop_telegram_monitoring()
+
     def start_telegram_monitoring(self):
-        if self.telegram_enabled.get() and not self.telegram_process:
+        if not self.telegram_process:
             venv_python = os.path.join(self.ai_toolkit_folder.get(), 'venv', 'Scripts', 'python.exe')
             if not os.path.exists(venv_python):
                 venv_python = os.path.join(self.ai_toolkit_folder.get(), 'venv', 'bin', 'python')
             
             if os.path.exists(venv_python):
                 telegram_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "telegram_monitor.py")
-                self.telegram_process = subprocess.Popen([venv_python, telegram_script])
+                self.telegram_process = subprocess.Popen([venv_python, telegram_script], 
+                                                         stdout=subprocess.PIPE, 
+                                                         stderr=subprocess.PIPE, 
+                                                         universal_newlines=True)
+                
+                # Start a thread to read the output
+                threading.Thread(target=self.read_telegram_output, daemon=True).start()
             else:
                 print("Virtual environment Python not found. Telegram monitoring not started.")
+
+    def read_telegram_output(self):
+        for line in self.telegram_process.stdout:
+            print("Telegram monitor:", line.strip())
+        for line in self.telegram_process.stderr:
+            print("Telegram monitor error:", line.strip())
 
     def stop_telegram_monitoring(self):
         if self.telegram_process:
