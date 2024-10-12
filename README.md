@@ -24,7 +24,7 @@ AI Toolkit Helper is an unofficial application designed to streamline workflows 
 
 ### Installation
 ```bash
-git clone https://github.com/your-username/ai-toolkit-helper.git
+git clone https://github.com/kalsloos/ai-toolkit-helper.git
 cd ai-toolkit-helper
 pip install -r requirements.txt
 ```
