@@ -100,7 +100,7 @@ class ImageCaptioningTab:
         folder_path = filedialog.askdirectory()
         if folder_path:
             images = [os.path.join(folder_path, f) for f in os.listdir(folder_path) 
-                      if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+                      if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.gif'))]
             for img in images:
                 self.image_queue.put(img)
             self.tab.after(0, self.process_image_queue)
@@ -238,7 +238,7 @@ class ImageCaptioningTab:
         caption_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
         caption_text = tk.Text(caption_frame, height=5, wrap="word")
-        caption_text.insert("1.0", self.captions[img_path])
+        caption_text.insert("1.0", self.captions.get(img_path, ""))
         caption_text.pack(side="top", fill="both", expand=True)
         frame.caption_text = caption_text  # Store caption_text as an attribute of the frame
 
@@ -266,22 +266,28 @@ class ImageCaptioningTab:
         messagebox.showinfo("Caption Cleared", f"Caption for {os.path.basename(img_path)} has been cleared.")
 
     def convert_to_png_and_backup(self):
-        backup_folder = "img_backup"
-        if not os.path.exists(backup_folder):
-            os.makedirs(backup_folder)
+        new_images = []
+        for img_path in list(self.images):
+            folder_path = os.path.dirname(img_path)
+            backup_folder = os.path.join(folder_path, "original_imgs")
+            if not os.path.exists(backup_folder):
+                os.makedirs(backup_folder)
 
-        for img_path in self.images:
-            # Backup original file
-            shutil.copy(img_path, backup_folder)
+            # Move original file to backup folder
+            backup_path = os.path.join(backup_folder, os.path.basename(img_path))
+            shutil.move(img_path, backup_path)
 
             # Convert to PNG if not already PNG
             if not img_path.lower().endswith(".png"):
-                img = Image.open(img_path)
-                new_path = img_path.rsplit('.', 1)[0] + '.png'
+                img = Image.open(backup_path)
+                new_path = os.path.join(folder_path, os.path.splitext(os.path.basename(img_path))[0] + '.png')
                 img.save(new_path, "PNG")
-                self.images.append(new_path)
-                self.captions[new_path] = self.captions[img_path]
+                new_images.append(new_path)
+                self.captions[new_path] = self.captions.pop(img_path)
+            else:
+                new_images.append(backup_path)
 
+        self.images = new_images
         messagebox.showinfo("Conversion Complete", "All images have been backed up and converted to PNG where applicable.")
         self.display_gallery()
 
