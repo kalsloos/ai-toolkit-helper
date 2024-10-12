@@ -9,8 +9,8 @@ watchdog==3.0.0
 numpy==1.23.5
 pandas==1.5.3
 matplotlib==3.7.0
-scikit-learn==1.2.2
+scikit-learn>=1.2.2
 tqdm==4.66.5
 einops==0.7.0
 safetensors==0.4.4
-cryptography==3.4.7
+cryptography>=41.0.0
