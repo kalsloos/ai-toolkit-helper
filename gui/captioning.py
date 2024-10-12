@@ -18,10 +18,9 @@ class ImageCaptioningTab:
         self.setup_ui()
         self.setup_florence()
 
-    def setup_florence(self):
+    def setup_florence(self, model_name="microsoft/Florence-2-base"):
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
         torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-        model_name = "microsoft/Florence-2-base"
         self.florence_processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
         self.florence_model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch_dtype, trust_remote_code=True).to(device)
 
@@ -53,11 +52,23 @@ class ImageCaptioningTab:
         auto_caption_frame.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Label(auto_caption_frame, text="Florence Model:").pack(side=tk.LEFT, padx=5, pady=5)
-        self.model_selector = ttk.Combobox(auto_caption_frame, values=["base", "large"], state="readonly", width=10)
-        self.model_selector.set("base")
+        self.model_selector = ttk.Combobox(auto_caption_frame, values=["Base", "Large"], state="readonly", width=10)
+        self.model_selector.set("Base")
         self.model_selector.pack(side=tk.LEFT, padx=5, pady=5)
+        self.model_selector.bind("<<ComboboxSelected>>", self.switch_model)
+
+        ttk.Label(auto_caption_frame, text="Caption Detail Level:").pack(side=tk.LEFT, padx=5, pady=5)
+        self.detail_selector = ttk.Combobox(auto_caption_frame, values=["Short", "Detailed", "More Detailed"], state="readonly", width=20)
+        self.detail_selector.set("Short")
+        self.detail_selector.pack(side=tk.LEFT, padx=5, pady=5)
 
         ttk.Button(auto_caption_frame, text="Generate All Captions", command=self.auto_caption_images).pack(side=tk.LEFT, padx=5, pady=5)
+
+    def switch_model(self, event):
+        selected_model = self.model_selector.get()
+        model_name = "microsoft/Florence-2-base" if selected_model == "base" else "microsoft/Florence-2-large"
+        self.setup_florence(model_name)
+        messagebox.showinfo("Model Switched", f"Switched to {selected_model} model.")
 
     def create_caption_modification_section(self):
         modify_frame = ttk.LabelFrame(self.main_frame, text="Caption Modification")
@@ -153,7 +164,8 @@ class ImageCaptioningTab:
         self.tab.update_idletasks()
 
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        prompt = "<DETAILED_CAPTION>"
+        detail_level = self.detail_selector.get()
+        prompt = "<CAPTION>" if detail_level == "Short" else "<DETAILED_CAPTION>" if detail_level == "Detailed" else "<MORE_DETAILED_CAPTION>"
         
         image = Image.open(img_path).convert("RGB")
         inputs = self.florence_processor(text=prompt, images=image, return_tensors="pt", do_rescale=False).to(self.florence_model.device)
@@ -292,4 +304,4 @@ class ImageCaptioningTab:
         self.display_gallery()
 
 def create_captioning_tab(tab):
-    ImageCaptioningTab(tab)
+    return ImageCaptioningTab(tab)
