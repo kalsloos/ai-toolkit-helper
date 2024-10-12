@@ -46,7 +46,7 @@ python main.py
 
 ## About the Author
 
-AI Toolkit Helper was created by a passionate AI enthusiast who is not a professional coder. This project was developed with the assistance of AI language models like Claude and ChatGPT, demonstrating the potential of AI-assisted development. The primary goals were to improve personal workflow efficiency and to potentially help others in the AI Toolkit community.
+AI Toolkit Helper was created by a passionate AI enthusiast who is not a professional coder. This project was developed with the assistance of AI language models like Claude and ChatGPT. The primary goals were to improve personal workflow efficiency and to potentially help others in the AI Toolkit community.
 
 ## Contributing
 
@@ -65,4 +65,4 @@ AI Toolkit Helper is an unofficial tool created to enhance personal workflow eff
 - Designed to complement [AI Toolkit](https://github.com/ostris/ai-toolkit) by ostris.
 - Utilizes the Florence-2 model from Microsoft for advanced image captioning.
 - Inspired by and grateful to the AI Toolkit community.
-- Developed with assistance from AI language models, showcasing the potential of AI in software development.
+- Developed with assistance from AI language models.
